@@ -1,0 +1,80 @@
+/**
+ * Sample business network definition.
+ */
+namespace com.novartis.iandd
+
+asset ServiceRequest identified by serviceRequestId {
+  o String serviceRequestId
+  --> Prescriber doctor 				optional 
+  --> Patient patient   				optional
+  --> Liaison patientServiceLiaison		optional
+  --> Insurer insurer					optional
+  o Boolean copayAssistance default=false
+  o Boolean patientDataShareConsent default=false
+  o Boolean prescriberDataShareConsent default=false
+  o Boolean liaisonApproveReject default=false
+  o Boolean insurerApproveReject default=false
+  o Boolean prescriberPrescriptionAuthorization default=false
+  o Integer PASIndex default=0
+  o Status workflowStatus
+}
+
+enum Status{
+  o WAITING_FOR_PATIENT_APPROVAL
+  o WAITING_FOR_PRESCRIBER_APPROVAL
+  o WAITING_FOR_INSURER
+}
+  
+concept DoctorCertificate{
+  o String registrationNumber
+  o DateTime expiryDate
+}
+  
+enum Sex{
+  o MALE
+  o FEMALE
+}
+
+enum ConsentType {
+  o PATIENT_DATA_SHARE_CONSENT
+  o PRESCRIBER_DATA_SHARE_CONSENT
+  o LIAISON_APPROVE_REJECT
+  o INSURER_APPROVE_REJECT
+  o PRESCRIBER_PRESCRIPTION_AUTH
+  o COPAY_ASSISTANCE
+}
+  
+participant Patient identified by patientId{
+  o String patientId
+  o String firstName 
+  o String lastName
+  o String address
+  o String socialSecurityNumber   
+  o Sex sex
+  --> Insurer insurer				optional
+}
+  
+participant Prescriber identified by prescriberId {
+  o String prescriberId
+  o String firstName
+  o String lastName
+  o DoctorCertificate certificate  
+}
+  
+participant Liaison identified by liaisonId{
+  o String liaisonId
+  o String firstName
+  o String lastName
+  o String liaisonOrg
+}
+
+participant Insurer identified by insurerId{
+  o String insurerId
+  o String insurerOrgName
+  o String insurerOrgId
+}
+
+transaction setServiceRequest identified by setSrvcRqstTxId{
+  o String setSrvcRqstTxId
+  o ConsentType consentTypeToSet
+}
