@@ -11,6 +11,10 @@ import { Dropdown } from 'office-ui-fabric-react/lib/Dropdown';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import {css} from 'glamor';
 import axios from 'axios';
+import SweetAlert from 'sweetalert-react';
+import PatientDetailList from './PatientPivotComponent';
+
+const uuidV4 = require('uuid/v4');
 
 class App extends Component {
     
@@ -20,8 +24,36 @@ class App extends Component {
             showCreatePrescriberDialog: false,
             showCreateLiaisonDialog : false,
             showCreateInsurerDialog: false,
-            showCreatePatientDialog: false
+            showCreatePatientDialog: false,
+            showAlert: false,
+            alertMessage: "",
+            patients: [],
+            liaisons: [],
+            insurers: [],
+            prescribers: []
+
         }
+    }
+
+    refreshData() {
+        axios.all([
+            axios.get('http://localhost:3000/api/com.novartis.iandd.Patient'),
+            axios.get('http://localhost:3000/api/com.novartis.iandd.Liaison'),
+            axios.get('http://localhost:3000/api/com.novartis.iandd.Prescriber'),
+            axios.get('http://localhost:3000/api/com.novartis.iandd.Insurer')    
+        ]).then(axios.spread(function(_patients, _liaisons, _prescribers, _insurers){
+            this.setState({
+                patients : _patients.data,
+                liaisons : _liaisons.data,
+                prescribers: _prescribers.data,
+                insurers : _insurers.data    
+            });
+        }.bind(this)));  
+    }
+    componentDidMount(){
+        console.log("Component will mount ");
+        
+        this.refreshData();
     }
 
     showCreatePrescriberDialog(){
@@ -48,6 +80,7 @@ class App extends Component {
             showCreatePatientDialog: true
         })
     }
+
     _closeDialog(dialogType){
         switch(dialogType){
             case "insurer": 
@@ -78,54 +111,43 @@ class App extends Component {
 
     _saveInsurerRecord(){
         var requestData = {
+            "insurerId" : "INSR:"+uuidV4(),
             "insurerOrgName": this.refs._insurerOrgID.value,
             "insurerOrgId" : this.refs._insurerOrgName.value
         }
 
-        axios.post("http://localhost:4200/insurer", requestData).then(function(response){
-            var _insurerRecords = [];
-            if(this.state.insurerRecords){
-                _insurerRecords = this.state.insurerRecords;
-                _insurerRecords.push(response);
-                this.setState({
-                    insurerRecords : _insurerRecords   
-                });
-                return;
-            } else {
-                _insurerRecords.push(response);
-                this.setState({
-                    insurerRecords: _insurerRecords
-                });
-            }            
+        axios.post("http://localhost:3000/api/com.novartis.iandd.Insurer", requestData).then(function(response){
+            alert("Insurer participant has been added successfully");
         });
     }
 
     _savePatientRecord(){
-        console.log(this.selectedPatientGender);
         var requestData = {
+            "patientId": "PAT:"+uuidV4(),
             "firstName": this.refs._firstName.value,
             "lastName": this.refs._lastName.value,
             "address": this.refs._address.value,
             "socialSecurityNumber": this.refs._socialSecurityNumber.value,
-            "gender": this.selectedPatientGender.key
+            "sex": this.selectedPatientGender.key
         }
         console.log(JSON.stringify(requestData));
-        axios.post("http://localhost:4200/patient", requestData).then(function(response){
-            var _patientRecords = [];
-            if(this.state.patientRecords){
-                _patientRecords = this.state.patientRecords;
-                _patientRecords.push(response);
-                this.setState({
-                    patientRecords : _patientRecords   
-                });
-                return;
-            } else {
-                _patientRecords.push(response);
-                this.setState({
-                    patientRecords: _patientRecords
-                });
-            }            
-        });        
+        axios.post("http://localhost:3000/api/com.novartis.iandd.Patient", requestData).then(function(response){            
+            var message = "Patient "+requestData.lastName+" "+requestData.firstName+" has been successfully added to block chain network";
+            this.setState({
+                showCreatePatientDialog: false,
+                showAlert: true,
+                alertTitle: "Patient added successfully",
+                alertMessage: message
+            });
+            this.refreshData();
+        }.bind(this)).catch(function(error){
+            var message = "Patient "+requestData.lastName+" "+requestData.firstName+" was not added to block chain network";
+             this.setState({
+                showAlert: true,
+                alertTitle: "Patient added successfully",
+                alertMessage: message
+            });
+        }.bind(this))
     }
 
     renderCreatePrescriberDialog(){
@@ -181,10 +203,6 @@ class App extends Component {
         )
     }
 
-    componentDidMount() {
-
-    }
-
     renderButtonGrid() {
         return (
             <div className="align-center">
@@ -213,11 +231,12 @@ class App extends Component {
     }
     
     renderPivots(){
+        console.log(this.state);
         return (
         <div className="pivot-align">
             <Pivot linkFormat={ PivotLinkFormat.links }>
                 <PivotItem linkText='Patients'>
-                    <Label>No Patients yet</Label>
+                    {this.state.patients.length > 0 ? <PatientDetailList displayData={this.state.patients} /> : <Label>No Patients yet</Label>}                    
                 </PivotItem>
                 <PivotItem linkText='Prescribers'>
                     <Label>No prescribers yet</Label>
@@ -253,12 +272,12 @@ class App extends Component {
                     <div className="ms-Grid-col ms-u-sm3 ms-u-md3 ms-u-lg3 ">
                         { this.renderButtonGrid() }
                     </div>
-                    <div className="ms-Grid-col ms-u-sm6 ms-u-md6 ms-u-lg6 ">
+                    <div className="ms-Grid-col ms-u-sm8 ms-u-md8 ms-u-lg8 ">
                         { this.renderPivots() }
                     </div>
                     {this.state.showCreateInsurerDialog ? this.renderCreateInsurerDialog() : null}
                     {this.state.showCreatePatientDialog ? this.renderCreatePatientDialog() : null}
-                    
+                    <SweetAlert show={this.state.showAlert} title={this.state.alertTitle} text={this.state.alertMessage} onConfirm={() => this.setState({ showAlert: false })}/>
                 </div>      
         );
     }

@@ -32,7 +32,16 @@
   margin-left: 10%;
 }
 
+.large-dialog{
+  z-index: 99998
+}
+
 .large-dialog .ms-Dialog-main{
   max-width: 500px;
   width:  98%;
+}
+
+.scrollDetailsList {
+    width: 99%;
+    padding-top: 10px;
 }
