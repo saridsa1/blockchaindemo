@@ -1,0 +1,74 @@
+/**
+ * Sample access control list.
+ * This file needs to be modified 
+ */
+rule Default {
+    description: "Allow all participants access to all resources"
+    participant: "ANY"
+    operation: ALL
+    resource: "com.novartis.iandd"
+    action: ALLOW
+}
+
+rule R1 {
+    description: "Allow the patient to update or view the service requests assigned to him"
+    participant(PT): "com.novartis.iandd.Patient"
+    operation: UPDATE
+    resource(SR): "com.novartis.iandd.ServiceRequest"
+    condition: (SR.patient.getIdentifier() == PT.getIdentifier())
+    action: ALLOW    
+}
+
+rule R2 {
+    description: "Allow the visibility of patient private info based on consent"
+    participant: "ANY"
+    operation: READ
+    resource(PT): "com.novartis.iandd.Patient.socialSecurityNumber"
+    condition: (PT.sharePrivateInfo == true)
+    action: ALLOW
+}
+
+rule R3 {
+    description: "Allow the visibility of patient private info based on consent"
+    participant: "ANY"
+    operation: READ
+    resource(PT): "com.novartis.iandd.Patient.address"
+    condition: (PT.sharePrivateInfo == true)
+    action: ALLOW
+}
+
+rule R4 {
+    description: "allow the visibility of doctor certificate to insurer"
+    participant: "com.novartis.iandd.Insurer"
+    operation : READ
+    resource(P) : "com.novartis.iandd.Prescriber"
+    condition : (P.prescriberDataShareConsent == true) 
+    action: ALLOW
+}
+
+rule R5 {
+    description: "allow PSL to view and modify SR only after patient signature"
+    participant : "com.novartis.iandd.Liaison"
+    operation : UPDATE
+    resource(SR) : "com.novartis.iandd.ServiceRequest"
+    condition : (SR.patientAuthorization == true)
+    action : ALLOW
+}
+
+rule R6 {
+    description: "Only after patient signs allow the insurer to view the SR "
+    participant : "com.novartis.iandd.Insurer"
+    operation : READ
+    resource(SR) : "com.novartis.iandd.ServiceRequest"
+    condition : (SR.patientAuthorization == true)
+    action : ALLOW    
+}
+
+rule R7 {
+    description: "Only after the PSL approves allow insurer to modify the SR"
+    participant : "com.novartis.iandd.Insurer"
+    operation : UPDATE
+    resource(SR) : "com.novartis.iandd.ServiceRequest"
+    condition : (SR.liaisonApproveReject == true)
+    action: ALLOW
+}

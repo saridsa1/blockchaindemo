@@ -9,14 +9,14 @@ asset ServiceRequest identified by serviceRequestId {
   --> Patient patient   				optional
   --> Liaison patientServiceLiaison		optional
   --> Insurer insurer					optional
-  o Boolean copayAssistance default=false
-  o Boolean patientDataShareConsent default=false
-  o Boolean prescriberDataShareConsent default=false
+  o Boolean copayAssistance default=false  
   o Boolean liaisonApproveReject default=false
   o Boolean insurerApproveReject default=false
   o Boolean prescriberPrescriptionAuthorization default=false
+  o Boolean patientAuthorization default=false
   o Integer PASIndex default=0
-  o Status workflowStatus
+  o String additionalComments optional
+  o Status workflowStatus optional
 }
 
 enum Status{
@@ -51,14 +51,17 @@ participant Patient identified by patientId{
   o String address
   o String socialSecurityNumber   
   o Sex sex
-  --> Insurer insurer				optional
+  o Boolean sharePrivateInfo default false
+  --> Insurer insurer	optional
 }
   
 participant Prescriber identified by prescriberId {
   o String prescriberId
   o String firstName
   o String lastName
-  o DoctorCertificate certificate  
+  o DoctorCertificate certificate 
+  o Boolean prescriberDataShareConsent default=false
+  o Patient[] patient optional
 }
   
 participant Liaison identified by liaisonId{
@@ -72,9 +75,4 @@ participant Insurer identified by insurerId{
   o String insurerId
   o String insurerOrgName
   o String insurerOrgId
-}
-
-transaction setServiceRequest identified by setSrvcRqstTxId{
-  o String setSrvcRqstTxId
-  o ConsentType consentTypeToSet
 }
