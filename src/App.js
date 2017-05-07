@@ -123,6 +123,33 @@ class App extends Component {
     }
 
     _saveLiaisonRecord(){
+        // Liaison email needs to be added
+        let requestData = {
+            "liaisonId": "LIAI:" + this.generateUUID(),
+            "firstName": this.refs._lFirstName.value,
+            "lastName": this.refs._lLastName.value,
+            "liaisonOrg": this.refs._lOrgId.value,
+        };
+
+        axios.post(BASE_URI+"/com.novartis.iandd.Liaison", requestData).then(function (response) {
+            console.log(JSON.stringify(response));
+            let message = "Liaison " + requestData.lastName + " has been successfully added to block chain network";
+            this.setState({
+                showCreateLiaisonDialog: false,
+                showAlert: true,
+                alertTitle: "Liaison added successfully",
+                alertMessage: message
+            });
+            this.refreshData();
+        }.bind(this)).catch(function(error){
+            console.error(error);
+            this.setState({
+                showCreatePrescriberDialog: false,
+                showAlert: true,
+                alertTitle: "Error occurred",
+                alertMessage: "An error occurred while creating the record"
+            });
+        });
 
     }
 
@@ -236,6 +263,29 @@ class App extends Component {
                 alertMessage: message
             });
         }.bind(this))
+    }
+
+    renderCreateLiaisonDialog(){
+        return (
+            <Dialog
+                isOpen={ this.state.showCreateLiaisonDialog }
+                type={ DialogType.normal }
+                onDismiss={ this._closeDialog.bind(this, "liaison") }
+                title='Create Liaison'
+                subText='Create a new liaison participant on the block chain'
+                className="large-dialog"
+                isBlocking={ true }>
+                <TextField ref="_lFirstName" label="First name" placeholder="Liaison's first name"/>
+                <TextField ref="_lLastName" label="Last name" placeholder="Liaison's last name"/>
+                <TextField ref="_lOrgId" label="Liaison Org" placeholder="Liaison's Org ID"/>
+                <TextField ref="_lEmailID" label="Liaison Email" placeholder="Liaison's Email ID"/>
+                <DialogFooter>
+                    <Button buttonType={ ButtonType.primary }
+                            onClick={ this._saveLiaisonRecord.bind(this) }>Save</Button>
+                    <Button onClick={ this._closeDialog.bind(this, "liaison") }>Cancel</Button>
+                </DialogFooter>
+            </Dialog>
+        )
     }
 
     renderCreatePrescriberDialog() {

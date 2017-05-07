@@ -70,6 +70,7 @@ participant Liaison identified by liaisonId{
   o String firstName
   o String lastName
   o String liaisonOrg
+  o String liaisonEmail
 }
 
 participant Insurer identified by insurerId{
