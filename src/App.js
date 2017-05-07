@@ -24,7 +24,7 @@ class App extends Component {
 
     generateUUID() {
         let d = new Date().getTime();
-        return uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        return  'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
             let r = (d + Math.random() * 16) % 16 | 0;
             d = Math.floor(d / 16);
             return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
@@ -140,10 +140,44 @@ class App extends Component {
                 alertMessage: message
             });
             this.refreshData();
+        }.bind(this)).catch(function(error){
+            console.error(error);
+            this.setState({
+                showCreateInsurerDialog: false,
+                showAlert: true,
+                alertTitle: "Error occurred",
+                alertMessage: "An error occurred while creating the record"
+            });
         });
     }
 
     _savePrescriberRecord() {
+        let requestData = {
+            "insurerId": "INSR:" + this.generateUUID(),
+            "insurerOrgName": this.refs._insurerOrgID.value,
+            "insurerOrgId": this.refs._insurerOrgName.value,
+            "insurerOrgEmail": this.refs._insurerEmail.value
+        };
+
+        axios.post(BASE_URI+"/com.novartis.iandd.Insurer", requestData).then(function (response) {
+            console.log(JSON.stringify(response));
+            let message = "Insurer " + requestData.insurerOrgEmail + " has been successfully added to block chain network";
+            this.setState({
+                showCreateInsurerDialog: false,
+                showAlert: true,
+                alertTitle: "Insurer added successfully",
+                alertMessage: message
+            });
+            this.refreshData();
+        }.bind(this)).catch(function(error){
+            console.error(error);
+            this.setState({
+                showCreateInsurerDialog: false,
+                showAlert: true,
+                alertTitle: "Error occurred",
+                alertMessage: "An error occurred while creating the record"
+            });
+        });
 
     }
 
@@ -171,8 +205,9 @@ class App extends Component {
             console.error(error);
             let message = "Patient " + requestData.lastName + " " + requestData.firstName + " was not added to block chain network";
             this.setState({
+                showCreatePatientDialog: false,
                 showAlert: true,
-                alertTitle: "Patient added successfully",
+                alertTitle: "An error occurred",
                 alertMessage: message
             });
         }.bind(this))
@@ -333,10 +368,10 @@ class App extends Component {
                         <span className="ms-font-xs ms-fontColor-white">{ dateString }</span>
                     </div>
                 </div>
-                <div className="ms-Grid-col ms-u-sm3 ms-u-md3 ms-u-lg3 ">
+                <div className="ms-Grid-col ms-u-sm2 ms-u-md2 ms-u-lg2 ">
                     { this.renderButtonGrid() }
                 </div>
-                <div className="ms-Grid-col ms-u-sm8 ms-u-md8 ms-u-lg8 ">
+                <div className="ms-Grid-col ms-u-sm10 ms-u-md10 ms-u-lg10 ">
                     { this.renderPivots() }
                 </div>
                 {this.state.showCreateInsurerDialog ? this.renderCreateInsurerDialog() : null}

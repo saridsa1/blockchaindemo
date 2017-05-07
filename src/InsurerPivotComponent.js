@@ -17,8 +17,8 @@ class InsurerDetailsList extends Component{
             key: "insurerOrgId",
             name: "Insurer Org ID",
             headerClassName: "ms-font-l v text-align-left",
-            minWidth: 50,
-            maxWidth: 100,
+            minWidth: 100,
+            maxWidth: 200,
             isCollapsable: false,
             isRowHeader: true,
             isResizable: true
@@ -27,8 +27,8 @@ class InsurerDetailsList extends Component{
             key: "insurerOrgName",
             name: "Insurer Org Name",
             headerClassName: "ms-font-l ms-fontColor-blue text-align-left",
-            minWidth: 50,
-            maxWidth: 100,
+            minWidth: 100,
+            maxWidth: 300,
             isCollapsable: false,
             isRowHeader: true,
             isResizable: true
@@ -37,8 +37,8 @@ class InsurerDetailsList extends Component{
             key: "actions",
             name: "Identity Actions",
             headerClassName: "ms-font-l ms-fontColor-blue text-align-left",
-            minWidth: 100,
-            maxWidth: 130,
+            minWidth: 50,
+            maxWidth: 70,
             isCollapsable: false,
             isRowHeader: true,
             isResizable: false

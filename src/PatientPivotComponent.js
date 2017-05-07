@@ -37,7 +37,7 @@ class PatientDetailList extends Component{
             name: "Address",
             headerClassName: "ms-font-l ms-fontColor-blue text-align-left",
             minWidth: 100,
-            maxWidth: 130,
+            maxWidth: 300,
             isCollapsable: false,
             isRowHeader: true,
             isResizable: true
@@ -56,8 +56,8 @@ class PatientDetailList extends Component{
             key: "actions",
             name: "Identity Actions",
             headerClassName: "ms-font-l ms-fontColor-blue text-align-left",
-            minWidth: 100,
-            maxWidth: 130,
+            minWidth: 50,
+            maxWidth: 70,
             isCollapsable: false,
             isRowHeader: true,
             isResizable: false

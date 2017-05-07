@@ -17,6 +17,8 @@ services:
     environment:
       - CORE_PEER_ADDRESSAUTODETECT=true
       - CORE_VM_ENDPOINT=unix:///var/run/docker.sock
+      - CORE_PEER_DISCOVERY_PERIOD=300s
+      - CORE_PEER_DISCOVERY_TOUCHPERIOD=301s
       - CORE_LOGGING_LEVEL=DEBUG
       - CORE_PEER_ID=vp0
       - CORE_PEER_PKI_ECA_PADDR=membersrvc:7054
@@ -27,6 +29,6 @@ services:
       - CORE_SECURITY_ENROLLSECRET=MwYpmSRjupbT
     links:
       - membersrvc
-    command: sh -c 'sleep 5; peer node start'
+    command: sh -c 'sleep 10; peer node start'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
