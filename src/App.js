@@ -427,7 +427,8 @@ class App extends Component {
                             <Label>No Insurer records yet</Label>}
                     </PivotItem>
                     <PivotItem linkText='Liaisons'>
-                        <Label>No liaisons yet</Label>
+                        {this.state.insurers.length > 0 ? <LiaisonDetailsList displayData={this.state.liaisons}/> :
+                            <Label>No Liaison records yet</Label>}
                     </PivotItem>
                 </Pivot>
             </div>
