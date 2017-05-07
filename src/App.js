@@ -17,6 +17,7 @@ import SweetAlert from 'sweetalert-react';
 import PatientDetailList from './PatientPivotComponent';
 import PrescriberDetailList from './PrescriberPivotComponent';
 import InsurerDetailsList from './InsurerPivotComponent';
+import LiaisonDetailsList from './LiaisonPivotComponent';
 
 const BASE_URI = "http://localhost:8090/api";
 

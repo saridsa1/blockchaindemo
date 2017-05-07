@@ -9,7 +9,7 @@ import SweetAlert from 'sweetalert-react';
 
 const BASE_URI = "http://localhost:8090/api";
 
-class LiaisonDetalsList extends Component{
+class LiaisonDetailsList extends Component{
 
     constructor(props){
         super(props);        
@@ -151,4 +151,4 @@ class LiaisonDetalsList extends Component{
     }
 }
 
-export default InsurerDetailsList;
+export default LiaisonDetailsList;
