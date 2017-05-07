@@ -156,27 +156,32 @@ class App extends Component {
     }
 
     _savePrescriberRecord() {
-        let requestData = {
-            "insurerId": "INSR:" + this.generateUUID(),
-            "insurerOrgName": this.refs._insurerOrgID.value,
-            "insurerOrgId": this.refs._insurerOrgName.value,
-            "insurerOrgEmail": this.refs._insurerEmail.value
+        var certificateObj = {
+            "registrationNumber" : this.refs._dCertificateID.value,
+            "expiryDate" : this.selectedDCExpiryDate
         };
 
-        axios.post(BASE_URI+"/com.novartis.iandd.Insurer", requestData).then(function (response) {
+        let requestData = {
+            "prescriberId": "PRSC:" + this.generateUUID(),
+            "firstName": this.refs._dFirstName.value,
+            "lastName": this.refs._dLastName.value,
+            "certificate" : certificateObj
+        };
+
+        axios.post(BASE_URI+"/com.novartis.iandd.Prescriber", requestData).then(function (response) {
             console.log(JSON.stringify(response));
-            let message = "Insurer " + requestData.insurerOrgEmail + " has been successfully added to block chain network";
+            let message = "Prescriber " + requestData.lastName + " has been successfully added to block chain network";
             this.setState({
-                showCreateInsurerDialog: false,
+                showCreatePrescriberDialog: false,
                 showAlert: true,
-                alertTitle: "Insurer added successfully",
+                alertTitle: "Prescriber added successfully",
                 alertMessage: message
             });
             this.refreshData();
         }.bind(this)).catch(function(error){
             console.error(error);
             this.setState({
-                showCreateInsurerDialog: false,
+                showCreatePrescriberDialog: false,
                 showAlert: true,
                 alertTitle: "Error occurred",
                 alertMessage: "An error occurred while creating the record"
@@ -194,17 +199,33 @@ class App extends Component {
             "socialSecurityNumber": this.refs._socialSecurityNumber.value,
             "sex": this.selectedPatientGender.key
         };
-        console.log(JSON.stringify(requestData));
+        
+        var primaryPhysicianData  = this.primaryPhysician.key;
+
+        //console.log(JSON.stringify(requestData));
         axios.post(BASE_URI+"/com.novartis.iandd.Patient", requestData).then(function (response) {
             console.log(JSON.stringify(response));
-            let message = "Patient " + requestData.lastName + " " + requestData.firstName + " has been successfully added to block chain network";
-            this.setState({
-                showCreatePatientDialog: false,
-                showAlert: true,
-                alertTitle: "Patient added successfully",
-                alertMessage: message
-            });
-            this.refreshData();
+            /**
+             * Update the physician to add this patient to a list of his patients
+             */
+            if(!primaryPhysicianData.patient){
+                primaryPhysicianData.patient = []
+            } 
+            primaryPhysicianData.patient.push(response.data.patientId);
+            console.log(JSON.stringify(primaryPhysicianData));
+
+            axios.put(BASE_URI+"/com.novartis.iandd.Prescriber/"+primaryPhysicianData.prescriberId, primaryPhysicianData).then(function(response){
+
+                let message = "Patient " + requestData.lastName + " " + requestData.firstName + " has been successfully added to block chain network";
+                this.setState({
+                    showCreatePatientDialog: false,
+                    showAlert: true,
+                    alertTitle: "Patient added successfully",
+                    alertMessage: message
+                });
+                this.refreshData();
+
+            }.bind(this))
         }.bind(this)).catch(function (error) {
             console.error(error);
             let message = "Patient " + requestData.lastName + " " + requestData.firstName + " was not added to block chain network";
@@ -230,7 +251,7 @@ class App extends Component {
                 <TextField ref="_dFirstName" label="First name" placeholder="Doctor's first name"/>
                 <TextField ref="_dLastName" label="Last name" placeholder="Doctor's last name"/>
                 <TextField ref="_dCertificateID" label="Certificate ID" placeholder="Doctor's certificate ID"/>
-                <DatePicker onSelectDate={ (item) => this.selectedDCExpiryDate = item } label="Expiry date"
+                <DatePicker onSelectDate={ date => this.selectedDCExpiryDate = date } label="Expiry date"
                             placeholder='Select a date...'/>
                 <DialogFooter>
                     <Button buttonType={ ButtonType.primary }
@@ -244,10 +265,11 @@ class App extends Component {
     renderCreatePatientDialog() {
         let prescribersData = this.state.prescribers.map(function(value, index){
             return {
-                'key' : value.prescriberId,
-                'value': value.lastName+" "+value.firstName
+                'key' : value,
+                'text': value.lastName+" "+value.firstName
             }
         });
+        console.log(JSON.stringify(prescribersData));
         return (
             <Dialog
                 isOpen={ this.state.showCreatePatientDialog }
@@ -269,7 +291,8 @@ class App extends Component {
                                   {key: 'FEMALE', text: 'Female'}
                               ]
                           }/>
-                <Dropdown ref="_primaryPhysician" label='Primary physician' onChanged = { (item) => this.primaryPhysician = item } options = {prescribersData}/>              
+                <Dropdown ref="_primaryPhysician" label='Primary physician' onChanged={ (item) => this.primaryPhysician = item } 
+                    options={prescribersData}/>              
                 <DialogFooter>
                     <Button buttonType={ ButtonType.primary }
                             onClick={ this._savePatientRecord.bind(this) }>Save</Button>
