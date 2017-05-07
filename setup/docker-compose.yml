@@ -30,10 +30,3 @@ services:
     command: sh -c 'sleep 5; peer node start'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-  composer:
-    image: fabriccomposer/composer-playground
-    ports:
-      - '8080:8080'
-    links:
-      - vp0
-      - membersrvc
