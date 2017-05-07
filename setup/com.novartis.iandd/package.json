@@ -1,0 +1,11 @@
+{
+   "name":"com.novartis.iandd",
+   "version":"0.0.1",
+   "description":"Sample IANDD network",
+   "keywords":[
+      "Novartis",
+      "IANDD network"
+   ],
+   "author":"Satya Suman, Praveen, Marco",
+   "license":"Apache-2.0"
+}
