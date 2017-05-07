@@ -460,6 +460,7 @@ class App extends Component {
                 {this.state.showCreateInsurerDialog ? this.renderCreateInsurerDialog() : null}
                 {this.state.showCreatePatientDialog ? this.renderCreatePatientDialog() : null}
                 {this.state.showCreatePrescriberDialog ? this.renderCreatePrescriberDialog() : null}
+                {this.state.showCreateLiaisonDialog ? this.renderCreateLiaisonDialog() : null}
                 <SweetAlert show={this.state.showAlert} title={this.state.alertTitle} text={this.state.alertMessage}
                             onConfirm={() => this.setState({showAlert: false})}/>
             </div>
