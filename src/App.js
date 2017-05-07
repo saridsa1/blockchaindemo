@@ -221,6 +221,7 @@ class App extends Component {
                 >
                     <TextField ref="_insurerOrgName" label='Insurer org name' placeholder='Organization name of the insurer' ariaLabel='Insurer org name' />
                     <TextField ref="_insurerOrgID" label='Insurer org ID' placeholder='Organization ID of the insurer' ariaLabel='Insurer org ID' />    
+                    <TextField ref="_insurerEmail" label='Insurer Email' placeholder='Email ID of the insurer' ariaLabel='Insurer org ID' />
                     <DialogFooter>
                         <Button buttonType={ ButtonType.primary } onClick={ this._saveInsurerRecord.bind(this) }>Save</Button>
                         <Button onClick={ this._closeDialog.bind(this, "insurer") }>Cancel</Button>

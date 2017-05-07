@@ -13,3 +13,5 @@ composer network deploy -a com.novartis.iandd@0.0.1.bna --enrollId WebAppAdmin -
 ## Updating the existing archive
 composer network update -a com.novartis.iandd@0.0.1.bna --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
 
+## Starting the composer-rest-server
+composer-rest-server -p defaultProfile -n com.novartis.iandd -i WebAppAdmin -s DJY27pEnl16d -N required
