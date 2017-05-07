@@ -7,6 +7,7 @@ import { SelectionMode } from 'office-ui-fabric-react/lib/Selection';
 import axios from 'axios';
 import SweetAlert from 'sweetalert-react';
 
+const BASE_URI = "http://localhost:9080/api";
 
 class PatientDetailList extends Component{
     constructor(props){
@@ -77,7 +78,7 @@ class PatientDetailList extends Component{
             "participant": "com.novartis.iandd.Patient#"+participant.patientId,
             "userID": userID
         }
-        axios.post('http://localhost:3000/api/system/issueIdentity', requestData).then(function(response){
+        axios.post(BASE_URI+'/system/issueIdentity', requestData).then(function(response){
             console.log(response.data);
             this.setState({
                 showAlert: true,
@@ -98,7 +99,7 @@ class PatientDetailList extends Component{
         let requestData = {
             "userID": userID
         };
-        axios.post('http://localhost:3000/api/system/revokeIdentity', requestData).then(function(response){       
+        axios.post(BASE_URI+'system/revokeIdentity', requestData).then(function(response){       
             console.log(response.data);
             this.setState({
                 showAlert: true,

@@ -122,6 +122,10 @@ class App extends Component {
         }
     }
 
+    _saveLiaisonRecord(){
+
+    }
+
     _saveInsurerRecord() {
         let requestData = {
             "insurerId": "INSR:" + this.generateUUID(),
@@ -228,7 +232,6 @@ class App extends Component {
                 <TextField ref="_dCertificateID" label="Certificate ID" placeholder="Doctor's certificate ID"/>
                 <DatePicker onSelectDate={ (item) => this.selectedDCExpiryDate = item } label="Expiry date"
                             placeholder='Select a date...'/>
-
                 <DialogFooter>
                     <Button buttonType={ ButtonType.primary }
                             onClick={ this._savePrescriberRecord.bind(this) }>Save</Button>
@@ -239,6 +242,12 @@ class App extends Component {
     }
 
     renderCreatePatientDialog() {
+        let prescribersData = this.state.prescribers.map(function(value, index){
+            return {
+                'key' : value.prescriberId,
+                'value': value.lastName+" "+value.firstName
+            }
+        });
         return (
             <Dialog
                 isOpen={ this.state.showCreatePatientDialog }
@@ -260,6 +269,7 @@ class App extends Component {
                                   {key: 'FEMALE', text: 'Female'}
                               ]
                           }/>
+                <Dropdown ref="_primaryPhysician" label='Primary physician' onChanged = { (item) => this.primaryPhysician = item } options = {prescribersData}/>              
                 <DialogFooter>
                     <Button buttonType={ ButtonType.primary }
                             onClick={ this._savePatientRecord.bind(this) }>Save</Button>
