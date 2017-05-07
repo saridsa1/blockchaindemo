@@ -45,3 +45,4 @@ jspm_packages
 .idea/workspace.xml
 .DS_Store
 setup/.DS_Store
+!/setup/com.novartis.iandd/
