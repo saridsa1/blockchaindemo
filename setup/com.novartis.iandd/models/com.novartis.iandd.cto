@@ -79,9 +79,8 @@ participant Insurer identified by insurerId{
   o String insurerOrgEmail
 }
 
-transaction AddPatientToPrescriber identified by transactionId {
+transaction SetPatientDataShareConsent identified by transactionId {
   o String transactionId
-  --> Prescriber prescriberReference
-  --> Patient patientRef
+  --> ServiceRequest serviceRequestRef
   o Boolean valueToSet
 }
