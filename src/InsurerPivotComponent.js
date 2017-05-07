@@ -8,13 +8,14 @@ import axios from 'axios';
 import SweetAlert from 'sweetalert-react';
 
 
-class PatientDetailList extends Component{
+class InsurerDetailsList extends Component{
+
     constructor(props){
         super(props);        
         let columns = [];
         columns.push({
-            key: "firstName",
-            name: "First Name",
+            key: "insurerOrgId",
+            name: "Insurer Org ID",
             headerClassName: "ms-font-l v text-align-left",
             minWidth: 50,
             maxWidth: 100,
@@ -23,31 +24,11 @@ class PatientDetailList extends Component{
             isResizable: true
         });
         columns.push({
-            key: "lastName",
-            name: "Last Name",
+            key: "insurerOrgName",
+            name: "Insurer Org Name",
             headerClassName: "ms-font-l ms-fontColor-blue text-align-left",
             minWidth: 50,
             maxWidth: 100,
-            isCollapsable: false,
-            isRowHeader: true,
-            isResizable: true
-        });
-        columns.push({
-            key: "address",
-            name: "Address",
-            headerClassName: "ms-font-l ms-fontColor-blue text-align-left",
-            minWidth: 100,
-            maxWidth: 130,
-            isCollapsable: false,
-            isRowHeader: true,
-            isResizable: true
-        });
-        columns.push({
-            key: "sex",
-            name: "Gender",
-            headerClassName: "ms-font-l ms-fontColor-blue text-align-left",
-            minWidth: 50,
-            maxWidth: 60,
             isCollapsable: false,
             isRowHeader: true,
             isResizable: true
@@ -70,13 +51,15 @@ class PatientDetailList extends Component{
             alertTitle: ""
         }
     }
-
+    replaceWhiteSpaces(input){
+        return input.replace(/\s/g, '_');
+    }
     issueIdentity(participant){
-        let userID = participant.lastName+"_"+participant.firstName;
+        let userID = participant.insurerOrgEmail;
         let requestData = {
-            "participant": "com.novartis.iandd.Patient#"+participant.patientId,
+            "participant": "com.novartis.iandd.Insurer#"+participant.insurerOrgEmail,
             "userID": userID
-        }
+        };
         axios.post('http://localhost:3000/api/system/issueIdentity', requestData).then(function(response){
             console.log(response.data);
             this.setState({
@@ -85,6 +68,7 @@ class PatientDetailList extends Component{
                 alertMessage: JSON.stringify(response.data)
             })
         }.bind(this)).catch(function(response) {
+            console.log(response);
             this.setState({
                 showAlert: true,
                 alertTitle: "Error issuing identity",
@@ -94,7 +78,7 @@ class PatientDetailList extends Component{
     }
 
     revokeIdentity(participant){
-        let userID = participant.lastName+"_"+participant.firstName;
+        let userID = participant.insurerOrgEmail;
         let requestData = {
             "userID": userID
         };
@@ -106,6 +90,7 @@ class PatientDetailList extends Component{
                 alertMessage: "Identity revoked for "+userID
             })
         }.bind(this)).catch(function(response) {
+            console.error(response);
             this.setState({
                 showAlert: true,
                 alertTitle: "Error revoking identity",
@@ -144,4 +129,4 @@ class PatientDetailList extends Component{
     }
 }
 
-export default PatientDetailList;
+export default InsurerDetailsList;

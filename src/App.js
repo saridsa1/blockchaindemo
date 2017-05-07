@@ -9,10 +9,14 @@ import {
 import { Label } from 'office-ui-fabric-react/lib/Label';
 import { Dropdown } from 'office-ui-fabric-react/lib/Dropdown';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
+import { DatePicker } from 'office-ui-fabric-react/lib/DatePicker';
+
 import {css} from 'glamor';
 import axios from 'axios';
 import SweetAlert from 'sweetalert-react';
 import PatientDetailList from './PatientPivotComponent';
+import PrescriberDetailList from './PrescriberPivotComponent';
+import InsurerDetailsList from './InsurerPivotComponent';
 
 const uuidV4 = require('uuid/v4');
 
@@ -63,7 +67,6 @@ class App extends Component {
     }
 
     showCreateInsurerDialog(){
-        console.log("show create insurer dialog");
         this.setState({
             showCreateInsurerDialog: true
         })
@@ -110,17 +113,19 @@ class App extends Component {
     }
 
     _saveInsurerRecord(){
-        var requestData = {
+        let requestData = {
             "insurerId" : "INSR:"+uuidV4(),
             "insurerOrgName": this.refs._insurerOrgID.value,
             "insurerOrgId" : this.refs._insurerOrgName.value
-        }
+        };
 
         axios.post("http://localhost:3000/api/com.novartis.iandd.Insurer", requestData).then(function(response){
             alert("Insurer participant has been added successfully");
         });
     }
+    _savePrescriberRecord(){
 
+    }
     _savePatientRecord(){
         var requestData = {
             "patientId": "PAT:"+uuidV4(),
@@ -129,10 +134,11 @@ class App extends Component {
             "address": this.refs._address.value,
             "socialSecurityNumber": this.refs._socialSecurityNumber.value,
             "sex": this.selectedPatientGender.key
-        }
+        };
         console.log(JSON.stringify(requestData));
-        axios.post("http://localhost:3000/api/com.novartis.iandd.Patient", requestData).then(function(response){            
-            var message = "Patient "+requestData.lastName+" "+requestData.firstName+" has been successfully added to block chain network";
+        axios.post("http://localhost:3000/api/com.novartis.iandd.Patient", requestData).then(function(response){
+            console.log(JSON.stringify(response));
+            let message = "Patient "+requestData.lastName+" "+requestData.firstName+" has been successfully added to block chain network";
             this.setState({
                 showCreatePatientDialog: false,
                 showAlert: true,
@@ -141,7 +147,8 @@ class App extends Component {
             });
             this.refreshData();
         }.bind(this)).catch(function(error){
-            var message = "Patient "+requestData.lastName+" "+requestData.firstName+" was not added to block chain network";
+            console.error(error);
+            let message = "Patient "+requestData.lastName+" "+requestData.firstName+" was not added to block chain network";
              this.setState({
                 showAlert: true,
                 alertTitle: "Patient added successfully",
@@ -151,7 +158,26 @@ class App extends Component {
     }
 
     renderCreatePrescriberDialog(){
-    
+        return (
+            <Dialog
+                isOpen={ this.state.showCreatePrescriberDialog }
+                type={ DialogType.normal }
+                onDismiss={ this._closeDialog.bind(this, "prescriber") }
+                title='Create patient'
+                subText='Create a new doctor participant on the block chain'
+                className="large-dialog"
+                isBlocking={ true }>
+                <TextField ref="_dFirstName" label="First name" placeholder="Doctor's first name" />
+                <TextField ref="_dLastName" label="Last name" placeholder="Doctor's last name" />
+                <TextField ref="_dCertificateID" label="Certificate ID" placeholder="Doctor's certificate ID" />
+                <DatePicker onSelectDate{ (item) => this.state.selectedDCExpiryDate = item } label="Expiry date" placeholder='Select a date...' />
+
+                <DialogFooter>
+                    <Button buttonType={ ButtonType.primary } onClick={ this._savePrescriberRecord.bind(this) }>Save</Button>
+                    <Button onClick={ this._closeDialog.bind(this, "prescriber") }>Cancel</Button>
+                </DialogFooter>
+            </Dialog>
+        )
     }
 
     renderCreatePatientDialog(){
@@ -207,7 +233,7 @@ class App extends Component {
         return (
             <div className="align-center">
                     <br/>
-                    <CompoundButton description='Create a new prescriber record' disabled={ false } onClick={this.showCreatePrescriberDialog.bind(this)}>
+                    <CompoundButton description='Create a new doctor record' disabled={ false } onClick={this.showCreatePrescriberDialog.bind(this)}>
                         Create Prescriber
                     </CompoundButton>
                     <div className="ms-u-clearfix"></div>
@@ -236,13 +262,13 @@ class App extends Component {
         <div className="pivot-align">
             <Pivot linkFormat={ PivotLinkFormat.links }>
                 <PivotItem linkText='Patients'>
-                    {this.state.patients.length > 0 ? <PatientDetailList displayData={this.state.patients} /> : <Label>No Patients yet</Label>}                    
+                    {this.state.patients.length > 0 ? <PatientDetailList displayData={this.state.patients} /> : <Label>No Patients records yet</Label>}
                 </PivotItem>
                 <PivotItem linkText='Prescribers'>
-                    <Label>No prescribers yet</Label>
+                    {this.state.prescribers.length > 0 ? <PrescriberDetailList displayData={this.state.prescribers} /> : <Label>No Doctors records yet</Label>}
                 </PivotItem>
                 <PivotItem linkText='Insurers'>
-                    <Label>No Insurers yet</Label>
+                    {this.state.insurers.length > 0 ? <InsurerDetailsList displayData={this.state.insurers} /> : <Label>No Insurer records yet</Label>}
                 </PivotItem>
                 <PivotItem linkText='Liaisons'>
                     <Label>No liaisons yet</Label>
@@ -277,6 +303,7 @@ class App extends Component {
                     </div>
                     {this.state.showCreateInsurerDialog ? this.renderCreateInsurerDialog() : null}
                     {this.state.showCreatePatientDialog ? this.renderCreatePatientDialog() : null}
+                    {this.state.showCreatePrescriberDialog ? this.renderCreatePrescriberDialog() : null}
                     <SweetAlert show={this.state.showAlert} title={this.state.alertTitle} text={this.state.alertMessage} onConfirm={() => this.setState({ showAlert: false })}/>
                 </div>      
         );
