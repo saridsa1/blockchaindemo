@@ -2,7 +2,7 @@
 
 This project has been created to demonstrate the capabilities of the block chain network
 
-# Prerequisites
+## Prerequisites
 
 ```
 OS - Ubuntu 16.04 LTS
