@@ -2,6 +2,17 @@
 
 This project has been created to demonstrate the capabilities of the block chain network
 
+## Dependencies
+
+Checkout the project from github
+```
+https://github.com/saridsa1/blockchain-rest-server
+```
+Start the server using 
+```
+npm start
+```
+
 ## Prerequisites
 
 ```
