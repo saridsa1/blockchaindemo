@@ -7,6 +7,7 @@ import {css} from 'glamor';
 import axios from 'axios';
 
 const BASE_URI = "http://localhost:8090/api";
+const AUTHENTICATION_URL = "http://localhost:2400/authenticate";
 
 class DoctorLogin extends Component {
     constructor(props){
@@ -29,22 +30,28 @@ class DoctorLogin extends Component {
     }
 
     _doLogin() {
-        /**
-         * Make an AJAX call to verify the credentials
-         */
-        var prescriberID = "PRSC:12d17034-6daf-4178-b6aa-14a158966384";
-        axios.get(BASE_URI+"/com.novartis.iandd.Prescriber/"+prescriberID).then(function(response){
-           this.setState({
-                logonSuccess : true,
-                showLoginDialog: false,
-                prescriberData: response.data
-            });
-            console.log(this.state);
-        }.bind(this)).catch(function(error){
-            console.error(error);
-            return null;
-        });
+        var authenticationData = {
+            "participantId": this.refs._userName.value,
+            "participantPassword": this.refs._password.value 
+        }
 
+        axios.post(AUTHENTICATION_URL, authenticationData).then(function(authenticationResponse){
+            console.log(JSON.stringify(authenticationResponse));
+            var prescriberID = authenticationResponse.data.participantId;
+            axios.get(BASE_URI+"/com.novartis.iandd.Prescriber/"+prescriberID).then(function(response){
+            this.setState({
+                    logonSuccess : true,
+                    showLoginDialog: false,
+                    prescriberData: response.data
+                });
+            }.bind(this)).catch(function(error){
+                console.error(error);
+                return null;
+            });
+        }.bind(this)).catch(function(error){
+            alert("An error occurred from authentication server, please check the console for more details");
+            console.error(error);
+        });
     }
 
     renderLoginDialog(){
@@ -53,12 +60,12 @@ class DoctorLogin extends Component {
             isOpen={ this.state.showLoginDialog }
             type={ DialogType.normal }
             onDismiss={ this._closeDialog.bind(this) }
-            title='Login'
+            title='Prescriber Login'
             subText='Login using generated credentials'
             isBlocking={ true }>
                 <div>
-                        <TextField label='User name' required={ true } />
-                        <TextField label='Password' type="password" required={ true }/>
+                        <TextField ref="_userName" label='User name' required={ true } />
+                        <TextField ref="_password" label='Password' type="password" required={ true }/>
                 </div>
                 <DialogFooter>
                     <PrimaryButton onClick={ this._doLogin.bind(this) } text='Login' />
@@ -70,7 +77,9 @@ class DoctorLogin extends Component {
 
     render(){
         let dateString = (new Date()).toISOString();
-
+        if(this.state.logonSuccess){
+            dateString = this.state.prescriberData.firstName+" "+this.state.prescriberData.lastName+" | "+this.state.prescriberData.$class+" | " +(new Date()).toISOString();
+        }
         return(
             <div className="ms-Grid">
                     <div className="ms-Grid-row" { ...css({
