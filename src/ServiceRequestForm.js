@@ -31,12 +31,10 @@ class ServiceRequestForm extends Component {
             title='Create Service Request'
             subText='Create a new service request for a patient'
             isBlocking={ true }>
-                <div className="sr-dialog-body">
-                    <Dropdown ref="_selectedPatient" label='Select a patient to create SR' onChanged={ (item) => this.selectedPatient = item } options={this.state.patients}/>
-                    <TextField multiline rows={ 5 }  label='Additional Comments'  />
-                    <TextField label='PAS Index' type='number' placeholder="PAS index" />
-                    <Checkbox label='I agree to prescribe the drug to this patient' defaultChecked={ false } onChange={ (item) => this.srfAuthorized = item } />
-                </div>
+                <Dropdown ref="_selectedPatient" label='Select a patient to create SR' onChanged={ (item) => this.selectedPatient = item } options={this.state.patients}/>
+                <TextField multiline rows={ 5 }  label='Additional Comments'  />
+                <TextField label='PAS Index' type='number' placeholder="PAS index" />
+                <Checkbox label='I agree to prescribe the drug to this patient' defaultChecked={ false } onChange={ (item) => this.srfAuthorized = item } />
                 <DialogFooter>
                     <PrimaryButton onClick={ this._onClose.bind(this) } text='Submit' />
                     <DefaultButton onClick={ this._onClose.bind(this) } text='Cancel' />
