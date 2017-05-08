@@ -4,12 +4,13 @@ import { BrowserRouter, Route } from 'react-router-dom';
 
 import App from './App';
 import NotFound from './NotFound';
+import DoctorLogin from './Login'
 
 const Routes = (props) => (
   <BrowserRouter>
     <div>
         <Route exact path="/" component={App} />
-        <Route path="/login" component={NotFound} />
+        <Route path="/doctorlogon" component={DoctorLogin} />
     </div>
   </BrowserRouter>
 );
