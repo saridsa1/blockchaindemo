@@ -6,7 +6,7 @@ import ServiceRequestForm from './ServiceRequestForm'
 import {css} from 'glamor';
 import axios from 'axios';
 
-const BASE_URI = "http://localhost:8090/api";
+const BASE_URI = "http://localhost:3000/api";
 const AUTHENTICATION_URL = "http://localhost:2400/authenticate";
 
 class DoctorLogin extends Component {
@@ -37,17 +37,43 @@ class DoctorLogin extends Component {
 
         axios.post(AUTHENTICATION_URL, authenticationData).then(function(authenticationResponse){
             console.log(JSON.stringify(authenticationResponse));
-            var prescriberID = authenticationResponse.data.participantId;
-            axios.get(BASE_URI+"/com.novartis.iandd.Prescriber/"+prescriberID).then(function(response){
-            this.setState({
-                    logonSuccess : true,
-                    showLoginDialog: false,
-                    prescriberData: response.data
+            if(authenticationResponse.data.participantType === "com.novartis.iandd.Prescriber"){
+                var prescriberID = authenticationResponse.data.participantId;
+                axios.get(BASE_URI+"/com.novartis.iandd.Prescriber/"+prescriberID).then(function(response){
+                this.setState({
+                        logonSuccess : true,
+                        showLoginDialog: false,
+                        participantType: "prescriber",
+                        prescriberData: response.data
+                    });
+                }.bind(this)).catch(function(error){
+                    console.error(error);
+                    return null;
                 });
-            }.bind(this)).catch(function(error){
-                console.error(error);
-                return null;
-            });
+            }
+            if(authenticationResponse.data.participantType === "com.novartis.iandd.Patient" || authenticationResponse.data.participantType === "com.novartis.iandd.Insurer"){
+                var participantId = authenticationResponse.data.participantId;
+                var participantType = "/"+authenticationResponse.data.participantType+"/"
+                axios.all([
+                    axios.get(BASE_URI+"/com.novartis.iandd.ServiceRequest"),
+                    axios.get(BASE_URI+participantType+participantId)
+                    ]
+                ).then(axios.spread(function (_servicerequestdata, _response) {
+                    if(authenticationResponse.data.participantType === "com.novartis.iandd.Patient"){
+                        this.setState({
+                            serviceRequestData: _servicerequestdata.data,
+                            patientData: _response.data
+                        });
+                    } else  if(authenticationResponse.data.participantType === "com.novartis.iandd.Insurer"){
+                        this.setState({
+                            serviceRequestData: _servicerequestdata.data,
+                            insurerData: _response.data
+                        });
+                    }
+
+                }.bind(this)));
+            }
+
         }.bind(this)).catch(function(error){
             alert("An error occurred from authentication server, please check the console for more details");
             console.error(error);
@@ -60,7 +86,7 @@ class DoctorLogin extends Component {
             isOpen={ this.state.showLoginDialog }
             type={ DialogType.normal }
             onDismiss={ this._closeDialog.bind(this) }
-            title='Prescriber Login'
+            title='Participant Login'
             subText='Login using generated credentials'
             isBlocking={ true }>
                 <div>
@@ -96,7 +122,9 @@ class DoctorLogin extends Component {
                         </div>
                     </div>
                     <div>
-                        {this.state.logonSuccess && this.state.prescriberData? <ServiceRequestForm SRType="DOCTOR" prescriber={this.state.prescriberData}/> : null}
+                        {this.state.logonSuccess && this.state.prescriberData ? <ServiceRequestForm SRType="DOCTOR" prescriber={this.state.prescriberData}/> : null}
+                        {this.state.logonSuccess && this.state.patientData ?    <ServiceRequestForm SRType="PATIENT" patient={this.state.patientData} SRData={this.state.serviceRequestData}/> : null}
+                        {this.state.logonSuccess && this.state.insurerData ?    <ServiceRequestForm SRType="INSURER" insurer={this.state.insurerData} SRData={this.state.serviceRequestData}/> : null}
                     </div>    
                     {this.state.showLoginDialog ? this.renderLoginDialog() : null}
             </div>            

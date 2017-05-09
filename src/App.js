@@ -19,7 +19,7 @@ import PrescriberDetailList from './PrescriberPivotComponent';
 import InsurerDetailsList from './InsurerPivotComponent';
 import LiaisonDetailsList from './LiaisonPivotComponent';
 
-const BASE_URI = "http://localhost:8090/api";
+const BASE_URI = "http://localhost:3000/api";
 
 class App extends Component {
 
@@ -198,7 +198,7 @@ class App extends Component {
 
         axios.post(BASE_URI+"/com.novartis.iandd.Prescriber", requestData).then(function (response) {
             console.log(JSON.stringify(response));
-            let message = "Prescriber " + requestData.lastName + " has been successfully added to block chain network";
+            let message = "Prescriber " + requestData.lastName + " "+ requestData.firstName + " has been successfully added to block chain network";
             this.setState({
                 showCreatePrescriberDialog: false,
                 showAlert: true,
@@ -225,12 +225,12 @@ class App extends Component {
             "lastName": this.refs._lastName.value,
             "address": this.refs._address.value,
             "socialSecurityNumber": this.refs._socialSecurityNumber.value,
-            "sex": this.selectedPatientGender.key
+            "sex": this.selectedPatientGender.key,
+            "insurer": this.insurerForPatient.key.insurerId
         };
-        
-        var primaryPhysicianData  = this.primaryPhysician.key;
+        console.log(JSON.stringify(requestData));
 
-        //console.log(JSON.stringify(requestData));
+        var primaryPhysicianData  = this.primaryPhysician.key;
         axios.post(BASE_URI+"/com.novartis.iandd.Patient", requestData).then(function (response) {
             console.log(JSON.stringify(response));
             /**
@@ -240,7 +240,7 @@ class App extends Component {
                 primaryPhysicianData.patient = []
             } 
             primaryPhysicianData.patient.push(response.data.patientId);
-            console.log(JSON.stringify(primaryPhysicianData));
+            
 
             axios.put(BASE_URI+"/com.novartis.iandd.Prescriber/"+primaryPhysicianData.prescriberId, primaryPhysicianData).then(function(response){
 
@@ -295,7 +295,7 @@ class App extends Component {
                 isOpen={ this.state.showCreatePrescriberDialog }
                 type={ DialogType.normal }
                 onDismiss={ this._closeDialog.bind(this, "prescriber") }
-                title='Create patient'
+                title='Create doctor'
                 subText='Create a new doctor participant on the block chain'
                 className="large-dialog"
                 isBlocking={ true }>
@@ -320,6 +320,12 @@ class App extends Component {
                 'text': value.lastName+" "+value.firstName
             }
         });
+        let insurerData = this.state.insurers.map(function(value, index){
+            return {
+                'key' : value,
+                'text': value.insurerOrgName
+            }
+        })
         console.log(JSON.stringify(prescribersData));
         return (
             <Dialog
@@ -343,7 +349,9 @@ class App extends Component {
                               ]
                           }/>
                 <Dropdown ref="_primaryPhysician" label='Primary physician' onChanged={ (item) => this.primaryPhysician = item } 
-                    options={prescribersData}/>              
+                    options={prescribersData}/>
+                <Dropdown ref="_selectedInsurer" label='Insurer' onChanged={ (item) => this.insurerForPatient = item } 
+                    options={insurerData}/>                    
                 <DialogFooter>
                     <Button buttonType={ ButtonType.primary }
                             onClick={ this._savePatientRecord.bind(this) }>Save</Button>

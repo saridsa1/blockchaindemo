@@ -7,7 +7,7 @@ import { SelectionMode } from 'office-ui-fabric-react/lib/Selection';
 import axios from 'axios';
 import SweetAlert from 'sweetalert-react';
 
-const BASE_URI = "http://localhost:8090/api";
+const BASE_URI = "http://localhost:3000/api";
 
 class InsurerDetailsList extends Component{
 
@@ -68,8 +68,8 @@ class InsurerDetailsList extends Component{
                 alertTitle: "Identity issued successfully!",
                 alertMessage: JSON.stringify(response.data)
             })
-        }.bind(this)).catch(function(response) {
-            console.log(response);
+        }.bind(this)).catch(function(error) {
+            console.error(error);
             this.setState({
                 showAlert: true,
                 alertTitle: "Error issuing identity",

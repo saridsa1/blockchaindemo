@@ -5,13 +5,10 @@ namespace com.novartis.iandd
 
 asset ServiceRequest identified by serviceRequestId {
   o String serviceRequestId
-  o String patientId
   --> Prescriber doctor 				optional 
   --> Patient patient   				optional
-  --> Liaison patientServiceLiaison		optional
   --> Insurer insurer					optional
   o Boolean copayAssistance default=false  
-  o Boolean liaisonApproveReject default=false
   o Boolean insurerApproveReject default=false
   o Boolean prescriberPrescriptionAuthorization default=false
   o Boolean patientAuthorization default=false

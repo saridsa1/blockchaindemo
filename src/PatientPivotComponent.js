@@ -7,7 +7,7 @@ import { SelectionMode } from 'office-ui-fabric-react/lib/Selection';
 import axios from 'axios';
 import SweetAlert from 'sweetalert-react';
 
-const BASE_URI = "http://localhost:9080/api";
+const BASE_URI = "http://localhost:3000/api";
 
 class PatientDetailList extends Component{
     constructor(props){
