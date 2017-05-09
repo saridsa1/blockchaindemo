@@ -10,7 +10,7 @@ const Routes = (props) => (
   <BrowserRouter>
     <div>
         <Route exact path="/" component={App} />
-        <Route path="/doctorlogon" component={DoctorLogin} />
+        <Route path="/servicerequest" component={DoctorLogin} />
     </div>
   </BrowserRouter>
 );

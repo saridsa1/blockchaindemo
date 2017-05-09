@@ -61,12 +61,16 @@ class DoctorLogin extends Component {
                 ).then(axios.spread(function (_servicerequestdata, _response) {
                     if(authenticationResponse.data.participantType === "com.novartis.iandd.Patient"){
                         this.setState({
-                            serviceRequestData: _servicerequestdata.data,
+                            logonSuccess : true,
+                            serviceRequestData: _servicerequestdata.data[0],
+                            showLoginDialog: false,
                             patientData: _response.data
                         });
                     } else  if(authenticationResponse.data.participantType === "com.novartis.iandd.Insurer"){
                         this.setState({
-                            serviceRequestData: _servicerequestdata.data,
+                            logonSuccess : true,
+                            serviceRequestData: _servicerequestdata.data[0],
+                            showLoginDialog: false,
                             insurerData: _response.data
                         });
                     }
@@ -103,8 +107,14 @@ class DoctorLogin extends Component {
 
     render(){
         let dateString = (new Date()).toISOString();
-        if(this.state.logonSuccess){
+        if(this.state.logonSuccess && this.state.prescriberData){
             dateString = this.state.prescriberData.firstName+" "+this.state.prescriberData.lastName+" | "+this.state.prescriberData.$class+" | " +(new Date()).toISOString();
+        }
+        if(this.state.logonSuccess && this.state.patientData){
+            dateString = this.state.patientData.firstName+" "+this.state.patientData.lastName+" | "+this.state.patientData.$class+" | " +(new Date()).toISOString();
+        }
+        if(this.state.logonSuccess && this.state.insurerData){
+            dateString = this.state.insurerData.insurerOrgEmail+" | "+this.state.insurerData.$class+" | " +(new Date()).toISOString();
         }
         return(
             <div className="ms-Grid">
@@ -123,8 +133,8 @@ class DoctorLogin extends Component {
                     </div>
                     <div>
                         {this.state.logonSuccess && this.state.prescriberData ? <ServiceRequestForm SRType="DOCTOR" prescriber={this.state.prescriberData}/> : null}
-                        {this.state.logonSuccess && this.state.patientData ?    <ServiceRequestForm SRType="PATIENT" patient={this.state.patientData} SRData={this.state.serviceRequestData}/> : null}
-                        {this.state.logonSuccess && this.state.insurerData ?    <ServiceRequestForm SRType="INSURER" insurer={this.state.insurerData} SRData={this.state.serviceRequestData}/> : null}
+                        {this.state.logonSuccess && this.state.patientData ?    <ServiceRequestForm SRType="PATIENT" patient={this.state.patientData} serviceRequest={this.state.serviceRequestData}/> : null}
+                        {this.state.logonSuccess && this.state.insurerData ?    <ServiceRequestForm SRType="INSURER" insurer={this.state.insurerData} serviceRequest={this.state.serviceRequestData}/> : null}
                     </div>    
                     {this.state.showLoginDialog ? this.renderLoginDialog() : null}
             </div>            

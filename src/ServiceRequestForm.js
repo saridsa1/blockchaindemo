@@ -20,7 +20,10 @@ class ServiceRequestForm extends Component {
         super(props);
         this.state = {
             patients : [],
-            showCreateServiceRequestDialog: false
+            showCreateServiceRequestDialog: false,
+            showAlert: false,
+            alertMessage: "",
+            alertTitle: ""
         }
     }
 
@@ -75,10 +78,8 @@ class ServiceRequestForm extends Component {
             case "PATIENT":
                 serviceRequestID = this.props.serviceRequest.serviceRequestId;
 
-                requestData = {
-                    "serviceRequestId" : serviceRequestID,
-                    "patientAuthorization": this.srfAuthorizedByPatient
-                }
+                requestData = this.props.serviceRequest;
+                requestData.patientAuthorization = this.srfAuthorizedByPatient;
 
                 axios.put(BASE_URI+"/com.novartis.iandd.ServiceRequest/"+serviceRequestID, requestData).then(function(response){
                     var serviceRequestID = response.data.serviceRequestId;
@@ -97,17 +98,15 @@ class ServiceRequestForm extends Component {
             case "INSURER":
                 serviceRequestID = this.props.serviceRequest.serviceRequestId;
 
-                requestData = {
-                    "serviceRequestId" : serviceRequestID,
-                    "copayAssistance": this.copayRequired,
-                    "insurerApproveReject": this.srfAuthorizedByInsurer
-                }
+                requestData = this.props.serviceRequest;
+                requestData.copayAssistance = this.copayRequired;
+                requestData.insurerApproveReject = this.srfAuthorizedByInsurer;
 
                 axios.put(BASE_URI+"/com.novartis.iandd.ServiceRequest/"+serviceRequestID, requestData).then(function(response){
                     var serviceRequestID = response.data.serviceRequestId;
                     let message = "The service request has now been completed!";
                     this.setState({
-                        showSignPatientSRForm: false,
+                        showSignInsurerSRForm: false,
                         showAlert: true,
                         alertTitle: "Service request complete",
                         alertMessage: message
@@ -221,13 +220,13 @@ class ServiceRequestForm extends Component {
         }
         if(this.props.SRType === "PATIENT") {
             this.setState({
-                showSignSRForm: true,
+                showSignPatientSRForm: true,
                 patientData: this.props.patient
             });
         }
         if(this.props.SRType === "INSURER") {
             this.setState({
-                showSignSRForm: true,
+                showSignInsurerSRForm: true,
                 insurerData: this.props.insurer
             });
         }
@@ -251,12 +250,12 @@ class ServiceRequestForm extends Component {
     renderSignSRF(){
         let patientData = this.props.patient;
         let serviceRequest = this.props.SRData;
-
+        let buttonDesc = "Sign the service request with ID - "+this.props.serviceRequest.serviceRequestId;
         return (
            <div> 
                 <br/>
-                <CompoundButton description='Sign the service request' disabled={ false } onClick={this.onShowCreateServiceRequestDialog.bind(this)}>
-                    Sign the service request with ID - {this.props.serviceRequest.serviceRequestId}
+                <CompoundButton description={buttonDesc} disabled={ false } onClick={this.onShowCreateServiceRequestDialog.bind(this)}>
+                    Sign the service request
                 </CompoundButton>
                 <div className="ms-u-clearfix"/>
            </div>
