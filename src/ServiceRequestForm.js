@@ -54,9 +54,9 @@ class ServiceRequestForm extends Component {
                 serviceRequestID = this.generateServiceRequestID();
                 requestData = {
                     "serviceRequestId":serviceRequestID,
-                    "patient" : this.selectedPatient.key.patientId,
+                    "patient" : this.selectedPatient.data.patientId,
                     "doctor"  : this.props.prescriber.prescriberId,
-                    "insurer" : this.selectedPatient.key.insurer,
+                    "insurer" : this.selectedPatient.data.insurer,
                     "prescriberPrescriptionAuthorization": this.srfAuthorized,
                     "PASIndex": this.refs._pasIndex.value,
                     "additionalComments" : this.refs._additionalComments.value
@@ -205,13 +205,15 @@ class ServiceRequestForm extends Component {
                 return (value != null);
             });
             axios.all(restCallURLs).then(function(args){
-                console.log(args);
+                
                 var patientData = args.map(function(value, index){
                     return {
-                        key: value.data,
-                        text: value.data.lastName+" "+value.data.firstName
+                        key: value.data.patientId,
+                        text: value.data.lastName+" "+value.data.firstName,
+                        data: value.data
                     };
                 });
+                console.log(patientData);
                 this.setState({
                     patients : patientData,
                     showCreateServiceRequestDialog: true

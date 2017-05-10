@@ -1,7 +1,40 @@
 /**
  * Access control list for the iandd Digital marketing project
  */
+rule Prescriber_Read_Details {
+      description: "Allow the prescriber to view his details"
+      participant(p1): "com.novartis.iandd.Prescriber"
+      operation: READ
+      resource(p2): "com.novartis.iandd.Prescriber"
+      condition: (p1.getIdentifier() == p2.getIdentifier())
+      action: ALLOW
+}
 
+rule Patient_Read_Details {
+      description: "Allow the patient to view his details"
+      participant(p1): "com.novartis.iandd.Patient"
+      operation: READ
+      resource(p2): "com.novartis.iandd.Patient"
+      condition: (p1.getIdentifier() == p2.getIdentifier())
+      action: ALLOW
+}
+
+rule Insurer_Read_Details {
+      description: "Allow the patient to view his details"
+      participant(i1): "com.novartis.iandd.Insurer"
+      operation: READ
+      resource(i2): "com.novartis.iandd.Insurer"
+      condition: (i1.getIdentifier() == i2.getIdentifier())
+      action: ALLOW
+}
+
+rule Prescriber_READ_ALL_Patients {
+      description: "Allow the prescriber view all patients"
+      participant: "com.novartis.iandd.Prescriber"
+      operation: READ
+      resource: "com.novartis.iandd.Patient"
+      action: ALLOW
+}
 
 rule Prescriber_CREATE_SR {
       description: "Allow the prescriber to create an SR"
@@ -34,7 +67,7 @@ rule Patient_READ_SR {
      participant(p): "com.novartis.iandd.Patient"
      operation: READ
      resource(s): "com.novartis.iandd.ServiceRequest"
-     condition: (s.patient.getIdentifier() == p.getIdentifier())
+     condition: (s.patient.getIdentifier() == p.getIdentifier() && s.prescriberPrescriptionAuthorization === true)
      action: ALLOW
 }
 
@@ -52,7 +85,7 @@ rule Insurer_READ_SR {
      participant(i): "com.novartis.iandd.Insurer"
      operation: READ
      resource(s): "com.novartis.iandd.ServiceRequest"
-     condition: (s.insurer.getIdentifier() == i.getIdentifier())
+     condition: (s.insurer.getIdentifier() == i.getIdentifier() && s.patientAuthorization === true)
      action: ALLOW
 }
 
