@@ -46,3 +46,6 @@ jspm_packages
 .DS_Store
 setup/.DS_Store
 !/setup/com.novartis.iandd/
+
+#generate build files
+build

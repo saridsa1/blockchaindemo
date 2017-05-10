@@ -77,8 +77,15 @@ participant Insurer identified by insurerId{
   o String insurerOrgEmail
 }
 
-transaction SetPatientDataShareConsent identified by transactionId {
-  o String transactionId
+transaction UpdateInsurerFlags identified by txId{
+  o String txId
   --> ServiceRequest serviceRequestRef
-  o Boolean valueToSet
+  o Boolean copayAssistance default=false
+  o Boolean insurerApproveReject default=false
+}
+
+transaction UpdatePatientFlags identified by txId{
+  o String txId
+  --> ServiceRequest serviceRequestRef
+  o Boolean patientAuthorization default=false
 }

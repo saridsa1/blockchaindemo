@@ -50,15 +50,28 @@ class App extends Component {
     }
 
     refreshData() {
+        /*axios.get(BASE_URI+'/com.novartis.iandd.Patient').then(function(_patients){
+            var _patientData = _patients.data;
+            axios.get(BASE_URI+'/com.novartis.iandd.Prescriber').then(function(_prescribers){
+                var _prescriberData = _prescribers.data;
+                axios.get(BASE_URI+'/com.novartis.iandd.Insurer').then(function(_insurers){
+                    var _insurerData = _insurers.data;
+                    this.setState({
+                        patients: _patientData,
+                        prescribers: _prescriberData,
+                        insurers: _insurerData
+                    });
+                }.bind(this))
+            }.bind(this))
+        }.bind(this));*/
+
         axios.all([
             axios.get(BASE_URI+'/com.novartis.iandd.Patient'),
-            axios.get(BASE_URI+'/com.novartis.iandd.Liaison'),
             axios.get(BASE_URI+'/com.novartis.iandd.Prescriber'),
             axios.get(BASE_URI+'/com.novartis.iandd.Insurer')
-        ]).then(axios.spread(function (_patients, _liaisons, _prescribers, _insurers) {
+        ]).then(axios.spread(function (_patients,  _prescribers, _insurers) {
             this.setState({
                 patients: _patients.data,
-                liaisons: _liaisons.data,
                 prescribers: _prescribers.data,
                 insurers: _insurers.data
             });
@@ -241,7 +254,6 @@ class App extends Component {
             } 
             primaryPhysicianData.patient.push(response.data.patientId);
             
-
             axios.put(BASE_URI+"/com.novartis.iandd.Prescriber/"+primaryPhysicianData.prescriberId, primaryPhysicianData).then(function(response){
 
                 let message = "Patient " + requestData.lastName + " " + requestData.firstName + " has been successfully added to block chain network";
@@ -325,8 +337,7 @@ class App extends Component {
                 'key' : value,
                 'text': value.insurerOrgName
             }
-        })
-        console.log(JSON.stringify(prescribersData));
+        });
         return (
             <Dialog
                 isOpen={ this.state.showCreatePatientDialog }
@@ -367,15 +378,15 @@ class App extends Component {
                 isOpen={ this.state.showCreateInsurerDialog }
                 type={ DialogType.normal }
                 onDismiss={ this._closeDialog.bind(this, "insurer") }
-                title='Create insurer'
-                subText='Create a new insurer participant on the block chain'
+                title='Create payer'
+                subText='Create a new payer participant on the block chain'
                 isBlocking={ true }
             >
-                <TextField ref="_insurerOrgName" label='Insurer org name' placeholder='Organization name of the insurer'
+                <TextField ref="_insurerOrgName" label='Payer org name' placeholder='Organization name of the insurer'
                            ariaLabel='Insurer org name'/>
-                <TextField ref="_insurerOrgID" label='Insurer org ID' placeholder='Organization ID of the insurer'
+                <TextField ref="_insurerOrgID" label='Payer org ID' placeholder='Organization ID of the insurer'
                            ariaLabel='Insurer org ID'/>
-                <TextField ref="_insurerEmail" label='Insurer Email' placeholder='Email ID of the insurer'
+                <TextField ref="_insurerEmail" label='Payer Email' placeholder='Email ID of the insurer'
                            ariaLabel='Insurer org ID'/>
                 <DialogFooter>
                     <Button buttonType={ ButtonType.primary }
@@ -402,7 +413,7 @@ class App extends Component {
                 </CompoundButton>
                 <div className="ms-u-clearfix"/>
                 <br/>
-                <CompoundButton description='Create a new insurer record' disabled={ false }
+                <CompoundButton description='Create a new payer record' disabled={ false }
                                 onClick={this.showCreateInsurerDialog.bind(this)}>
                     Create Insurer
                 </CompoundButton>
@@ -431,9 +442,9 @@ class App extends Component {
                             <PrescriberDetailList displayData={this.state.prescribers}/> :
                             <Label>No Doctors records yet</Label>}
                     </PivotItem>
-                    <PivotItem linkText='Insurers'>
+                    <PivotItem linkText='Payers'>
                         {this.state.insurers.length > 0 ? <InsurerDetailsList displayData={this.state.insurers}/> :
-                            <Label>No Insurer records yet</Label>}
+                            <Label>No Payer records yet</Label>}
                     </PivotItem>
                     <PivotItem linkText='Liaisons'>
                         {this.state.insurers.length > 0 ? <LiaisonDetailsList displayData={this.state.liaisons}/> :

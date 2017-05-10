@@ -1,11 +1,66 @@
 /**
- * Sample access control list.
- * This file needs to be modified
+ * Access control list for the iandd Digital marketing project
  */
-rule Default {
-    description: "Allow all participants access to all resources"
-    participant: "ANY"
-    operation: ALL
-    resource: "com.novartis.iandd"
-    action: ALLOW
+
+
+rule Prescriber_CREATE_SR {
+      description: "Allow the prescriber to create an SR"
+      participant: "com.novartis.iandd.Prescriber"
+      operation: CREATE
+      resource: "com.novartis.iandd.ServiceRequest"
+      action: ALLOW
+}
+
+rule Prescriber_READ_SR {
+      description: "Allow the prescriber to read an SR that he created"
+      participant(d): "com.novartis.iandd.Prescriber"
+      operation: READ
+      resource(s): "com.novartis.iandd.ServiceRequest"
+      condition: (s.doctor.getIdentifier() == d.getIdentifier())
+      action: ALLOW
+}
+
+rule Prescriber_UPDATE_SR {
+      description: "Allow the prescriber to update an SR created by him"
+      participant(d): "com.novartis.iandd.Prescriber"
+      operation: UPDATE
+      resource(s): "com.novartis.iandd.ServiceRequest"
+      condition: (s.doctor.getIdentifier() == d.getIdentifier())
+      action: ALLOW
+}
+
+rule Patient_READ_SR {
+     description: "Allow the patient to view the service requests assigned to him"
+     participant(p): "com.novartis.iandd.Patient"
+     operation: READ
+     resource(s): "com.novartis.iandd.ServiceRequest"
+     condition: (s.patient.getIdentifier() == p.getIdentifier())
+     action: ALLOW
+}
+
+rule Patient_UPDATE_SR {
+     description: "Allow the patient to update or view the service requests assigned to him"
+     participant(p): "com.novartis.iandd.Patient"
+     operation: UPDATE
+     resource(s): "com.novartis.iandd.ServiceRequest"
+     condition: (s.patient.getIdentifier() == p.getIdentifier())
+     action: ALLOW
+}
+
+rule Insurer_READ_SR {
+     description: "Allow the Insurer to read the service requests assigned to him"
+     participant(i): "com.novartis.iandd.Insurer"
+     operation: READ
+     resource(s): "com.novartis.iandd.ServiceRequest"
+     condition: (s.insurer.getIdentifier() == i.getIdentifier())
+     action: ALLOW
+}
+
+rule Insurer_UPDATE_SR {
+     description: "Allow the Insurer to update the service requests assigned to him"
+     participant(i): "com.novartis.iandd.Insurer"
+     operation: UPDATE
+     resource(s): "com.novartis.iandd.ServiceRequest"
+     condition: (s.insurer.getIdentifier() == i.getIdentifier())
+     action: ALLOW
 }

@@ -16,7 +16,7 @@ class InsurerDetailsList extends Component{
         let columns = [];
         columns.push({
             key: "insurerOrgId",
-            name: "Insurer Org ID",
+            name: "Payer Org ID",
             headerClassName: "ms-font-l v text-align-left",
             minWidth: 100,
             maxWidth: 200,
@@ -26,7 +26,7 @@ class InsurerDetailsList extends Component{
         });
         columns.push({
             key: "insurerOrgName",
-            name: "Insurer Org Name",
+            name: "Payer Org Name",
             headerClassName: "ms-font-l ms-fontColor-blue text-align-left",
             minWidth: 100,
             maxWidth: 300,
@@ -58,7 +58,7 @@ class InsurerDetailsList extends Component{
     issueIdentity(participant){
         let userID = participant.insurerOrgEmail;
         let requestData = {
-            "participant": "com.novartis.iandd.Insurer#"+participant.insurerOrgEmail,
+            "participant": "com.novartis.iandd.Insurer#"+participant.insurerId,
             "userID": userID
         };
         axios.post(BASE_URI+'/system/issueIdentity', requestData).then(function(response){

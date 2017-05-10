@@ -13,14 +13,32 @@
  */
 
 /**
- * Set the patient data share consent
- * @param {com.novartis.iandd.SetPatientDataShareConsent} patientDataShareConsent - The patient data share consent
+ * This transaction is responsible for updating the insurer flags on the 
+ * service request
+ * @param {com.novartis.iandd.UpdateInsurerFlags} inputArg - The input argument
  * @transaction
  */
-function onSetPatientDataShareConsent(patientDataShareConsent) {
-	console.log("onSetPatientDataShareConsent ");
-	patientDataShareConsent.serviceRequestRef.patientAuthorization = patientDataShareConsent.valueToSet;
+function onUpdateInsurerFlags(inputArg) {
+	console.log("== Updating the insurer flags == ");
+	inputArg.serviceRequestRef.copayAssistance = inputArg.copayAssistance;
+	inputArg.serviceRequestRef.insurerApproveReject = inputArg.insurerApproveReject;
+	
 	return getAssetRegistry('com.novartis.iandd.ServiceRequest').then(function(serviceRegistry){
-		serviceRegistry.update(patientDataShareConsent.serviceRequestRef);
+		serviceRegistry.update(inputArg.serviceRequestRef);
+	});
+}
+
+/**
+ * This transaction is responsible for updating the patient flags on the 
+ * service request
+ * @param {com.novartis.iandd.UpdatePatientFlags} inputArg - The input argument
+ * @transaction
+ */
+function onUpdatePatientFlags(inputArg) {
+	console.log("== Updating the insurer flags == ");
+	inputArg.serviceRequestRef.patientAuthorization = inputArg.patientAuthorization;
+	
+	return getAssetRegistry('com.novartis.iandd.ServiceRequest').then(function(serviceRegistry){
+		serviceRegistry.update(inputArg.serviceRequestRef);
 	});
 }
