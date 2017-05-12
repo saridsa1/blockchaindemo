@@ -74,7 +74,7 @@ class App extends Component {
                 patients: _patients.data,
                 prescribers: _prescribers.data,
                 insurers: _insurers.data
-            });
+            });            
         }.bind(this)));
     }
 
