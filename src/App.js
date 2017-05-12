@@ -239,11 +239,11 @@ class App extends Component {
             "address": this.refs._address.value,
             "socialSecurityNumber": this.refs._socialSecurityNumber.value,
             "sex": this.selectedPatientGender.key,
-            "insurer": this.insurerForPatient.key.insurerId
+            "insurer": this.insurerForPatient.data.insurerId
         };
         console.log(JSON.stringify(requestData));
 
-        var primaryPhysicianData  = this.primaryPhysician.key;
+        var primaryPhysicianData  = this.primaryPhysician.data;
         axios.post(BASE_URI+"/com.novartis.iandd.Patient", requestData).then(function (response) {
             console.log(JSON.stringify(response));
             /**
@@ -328,14 +328,16 @@ class App extends Component {
     renderCreatePatientDialog() {
         let prescribersData = this.state.prescribers.map(function(value, index){
             return {
-                'key' : value,
-                'text': value.lastName+" "+value.firstName
+                'key' : value.prescriberId,
+                'text': value.lastName+" "+value.firstName,
+                'data': value
             }
         });
         let insurerData = this.state.insurers.map(function(value, index){
             return {
-                'key' : value,
-                'text': value.insurerOrgName
+                'key' : value.insurerId,
+                'text': value.insurerOrgName,
+                'data': value
             }
         });
         return (
